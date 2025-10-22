@@ -1,0 +1,7 @@
+{
+  "name": "fraud-detecion",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
