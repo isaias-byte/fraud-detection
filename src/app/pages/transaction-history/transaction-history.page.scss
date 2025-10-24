@@ -1,0 +1,52 @@
+/* transaction-history.page.scss */
+
+/* Estilo para el estado vacío (cuando no hay transacciones) */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  text-align: center;
+  color: var(--ion-color-medium-shade);
+
+  ion-icon {
+    font-size: 80px; // Ícono grande
+    color: var(--ion-color-success); // Un verde de "todo bien"
+  }
+
+  h3 {
+    font-weight: 600;
+    margin-top: 16px;
+  }
+
+  p {
+    font-size: 0.9em;
+  }
+}
+
+/* Estilos para la lista */
+ion-list[inset] {
+  margin: 16px;
+  border-radius: 12px;
+}
+
+ion-item {
+  --padding-start: 12px;
+  
+  ion-label h2 {
+    font-weight: 600; // Fecha en negrita
+    font-size: 1em;
+    margin-bottom: 4px;
+  }
+
+  ion-label p {
+    font-size: 0.8em;
+    color: var(--ion-color-medium-shade); // Texto secundario más suave
+  }
+
+  ion-icon[slot="start"] {
+    margin-right: 16px; // Espacio para el ícono de alerta
+    font-size: 1.4em;
+  }
+}

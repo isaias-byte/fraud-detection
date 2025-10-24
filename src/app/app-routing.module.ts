@@ -3,13 +3,17 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
-    path: 'home',
-    loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
+    path: 'add-transaction',
+    loadChildren: () => import('./pages/add-transaction/add-transaction.module').then( m => m.AddTransactionPageModule)
   },
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'add-transaction',
     pathMatch: 'full'
+  },
+  {
+    path: 'transaction-history',
+    loadChildren: () => import('./pages/transaction-history/transaction-history.module').then( m => m.TransactionHistoryPageModule)
   },
 ];
 
