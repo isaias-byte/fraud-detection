@@ -11,12 +11,12 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class AddTransactionPage implements OnInit {
 
   paymentForm: FormGroup;
-  // URL de tu API en Python (cámbiala por la tuya)
+  // URL de tu API en Python
   private apiURL = ''; 
 
   constructor(
     private fb: FormBuilder,
-    private http: HttpClient // Inyecta HttpClient
+    private http: HttpClient
   ) {
     
     // Definición del formulario y sus validadores
@@ -51,10 +51,10 @@ export class AddTransactionPage implements OnInit {
       return;
     }
 
-    // Si el formulario es válido, aquí llamas a tu API
+    // Si el formulario es válido, aquí llamamos a la API
     console.log('Datos del formulario:', this.paymentForm.value);
 
-    // Aquí es donde te conectas a tu backend de Python
+    // Aquí es donde nos conectamos al backend de Python
     // this.http.post(this.apiURL, this.paymentForm.value).subscribe(
     //   (respuesta) => {
     //     console.log('Respuesta de la API:', respuesta);

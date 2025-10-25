@@ -24,7 +24,7 @@ export class TransactionHistoryPage implements OnInit {
   }
 
   loadHistory() {
-    // En el futuro, aquí llamarías a tu servicio
+    // En el futuro, aquí llamaremos a nuestro servicio
     // Por ahora, usamos los 3 datos harcodeados
     this.transactions = [
       {
@@ -52,8 +52,7 @@ export class TransactionHistoryPage implements OnInit {
   transactionDetails(id: string) {
     console.log('Navegando al detalle de la transacción:', id);
     
-    // Aquí navegarías a tu página de detalle
-    // (Asegúrate de crear esta página, ej: 'transaction-detail')
+    // Aquí navegaremos  a la página de detalle    
     // this.router.navigate(['/transaction-detail', id]);
 
     // Por ahora, solo mostramos un alert
