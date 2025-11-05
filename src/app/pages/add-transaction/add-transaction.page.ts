@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AlertController, LoadingController } from '@ionic/angular';
+import { Api } from 'src/app/services/api';
 
 @Component({
   selector: 'app-add-transaction',
@@ -10,16 +12,15 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class AddTransactionPage implements OnInit {
 
-  paymentForm: FormGroup;
-  // URL de tu API en Python
-  private apiURL = ''; 
+  paymentForm: FormGroup; 
 
   constructor(
-    private fb: FormBuilder,
-    private http: HttpClient
+    private fb: FormBuilder,   
+    private alertCtrl: AlertController,
+    private loadingCtrl: LoadingController,
+    private api: Api,
   ) {
-    
-    // Definición del formulario y sus validadores
+        
     this.paymentForm = this.fb.group({
       cardNumber: ['', [
         Validators.required,
@@ -43,7 +44,7 @@ export class AddTransactionPage implements OnInit {
   ngOnInit() {
   }
 
-  processPayment() {
+  async processPayment() {
     if (this.paymentForm.invalid) {
       console.log('Formulario inválido');
       // Opcional: Marcar todos los campos como "tocados" para mostrar errores
@@ -51,24 +52,54 @@ export class AddTransactionPage implements OnInit {
       return;
     }
 
-    // Si el formulario es válido, aquí llamamos a la API
+    
+
+    const loading = await this.loadingCtrl.create({
+      message: 'Procesando transacción...',
+    });
+    await loading.present();
+
+    const formData = this.paymentForm.value;
+
+    const [month, year] = formData.expiryDate.split('/');
+    
+    const apiPayload = {
+      name: formData.cardName,
+      card_bin: formData.cardNumber.substring(0, 6), // Primeros 6 dígitos
+      card_last_four: formData.cardNumber.substring(12, 16), // Últimos 4 dígitos
+      card_expiry_month: parseInt(month, 10), // Convertimos '05' a 5
+      card_expiry_year: parseInt('20' + year, 10) // Convertimos '29' a 2029
+    };
+
     console.log('Datos del formulario:', this.paymentForm.value);
 
-    // Aquí es donde nos conectamos al backend de Python
-    // this.http.post(this.apiURL, this.paymentForm.value).subscribe(
-    //   (respuesta) => {
-    //     console.log('Respuesta de la API:', respuesta);
-    //     // Aquí puedes mostrar si fue fraudulenta o no
-    //     // por ejemplo, con un Alert de Ionic
-    //   },
-    //   (error) => {
-    //     console.error('Error al contactar la API:', error);
-    //   }
-    // );
+    this.api.createTransactionAndUser(apiPayload).subscribe(
+      async (response) => {
+        await loading.dismiss();
+        console.log('Respuesta de la API:', response);
+        this.showAlert('Éxito', 'La transacción y el usuario se crearon.');
+        this.paymentForm.reset();
+      },
+      async (error) => {
+        await loading.dismiss();
+        console.error('Error al contactar la API:', error);
+        if (error.status === 0) {
+          this.showAlert('Error de Conexión', 'No se pudo conectar con la API.');
+        } else {
+          this.showAlert('Error', `Ocurrió un error: ${error.message}`);
+        }
+      }
+    );
     
-    // Por ahora (demo), solo reseteamos el formulario
-    alert('Transacción enviada a verificar (simulación)');
-    this.paymentForm.reset();
+  }
+
+  async showAlert(header: string, message: string) {
+    const alert = await this.alertCtrl.create({
+      header,
+      message,
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 
 }
