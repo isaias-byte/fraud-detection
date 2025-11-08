@@ -24,9 +24,10 @@
           formControlName="cardNumber"
           type="tel"
           inputmode="numeric"
-          maxlength="16"
+          maxlength="19"
           placeholder="0000 0000 0000 0000"
-          errorText="Número de tarjeta inválido">
+          errorText="Número de tarjeta inválido"
+          (ionInput)="formatCardNumber($event)">
         </ion-input>
       </ion-item>
 
@@ -51,7 +52,8 @@
               type="text"
               maxlength="5"
               placeholder="12/25"
-              errorText="Fecha inválida">
+              errorText="Fecha inválida"
+              (ionInput)="formatExpiryDate($event)">
             </ion-input>
           </ion-item>
         </ion-col>

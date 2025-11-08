@@ -46,8 +46,7 @@ export class AddTransactionPage implements OnInit {
 
   async processPayment() {
     if (this.paymentForm.invalid) {
-      console.log('Formulario inválido');
-      // Opcional: Marcar todos los campos como "tocados" para mostrar errores
+      console.log('Formulario inválido');      
       this.paymentForm.markAllAsTouched();
       return;
     }
@@ -100,6 +99,40 @@ export class AddTransactionPage implements OnInit {
       buttons: ['OK']
     });
     await alert.present();
+  }
+
+  formatCardNumber(event: any) {
+    const input = event.target as HTMLInputElement;
+    let value = input.value;
+
+    const rawValue = value.replace(/\D/g, '');
+    const truncatedValue = rawValue.substring(0, 16);
+
+    this.paymentForm.get('cardNumber')?.patchValue(truncatedValue, { emitEvent: false });
+
+    const groups = truncatedValue.match(/.{1,4}/g) || [];
+    const formattedValue = groups.join(' ');
+
+    input.value = formattedValue;
+  }
+
+  formatExpiryDate(event: any) {
+    const input = event.target as HTMLInputElement;
+    let value = input.value;
+    
+    const rawValue = value.replace(/\D/g, '');
+    
+    let formattedValue = '';
+    if (rawValue.length > 0) {
+      formattedValue = rawValue.substring(0, 2);
+    }
+    if (rawValue.length >= 2) {      
+      formattedValue = rawValue.substring(0, 2) + '/' + rawValue.substring(2, 4);
+    }
+    
+    this.paymentForm.get('expiryDate')?.patchValue(formattedValue, { emitEvent: false });
+   
+    input.value = formattedValue;
   }
 
 }
