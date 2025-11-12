@@ -24,19 +24,19 @@ export class AddTransactionPage implements OnInit {
     this.paymentForm = this.fb.group({
       cardNumber: ['', [
         Validators.required,
-        Validators.pattern('^[0-9]{16}$') // Valida 16 dígitos numéricos
+        Validators.pattern('^[0-9]{16}$')
       ]],
       cardName: ['', [
         Validators.required,
-        Validators.minLength(5) // Un nombre razonable
+        Validators.minLength(5)
       ]],
       expiryDate: ['', [
         Validators.required,
-        Validators.pattern('^(0[1-9]|1[0-2])\/([0-9]{2})$') // Formato MM/AA
+        Validators.pattern('^(0[1-9]|1[0-2])\/([0-9]{2})$')
       ]],
       cvv: ['', [
         Validators.required,
-        Validators.pattern('^[0-9]{3,4}$') // Valida 3 o 4 dígitos
+        Validators.pattern('^[0-9]{3,4}$')
       ]],
     });
   }

@@ -50,3 +50,17 @@ ion-item {
     font-size: 1.4em;
   }
 }
+
+.pagination-toolbar {
+  // Asegura que los botones tengan espacio
+  ion-buttons {
+    flex-basis: 100px;
+  }
+
+  // Centra el título y reduce su tamaño
+  .pagination-title {
+    font-size: 0.9em;
+    padding: 0;
+    text-align: center;
+  }
+}

@@ -19,4 +19,8 @@ export class Api {
     // No "alerta" ni "resetea" formularios.
     return this.http.post(`${this.apiURL}/create-transaction-test/`, payload);
   }
+
+  allFraudulentTransactions(page: number = 1, search: string = ''): Observable<any> {
+    return this.http.get(`${this.apiURL}/all-fraudulent-transactions/?page=${page}&search=${search}`);
+  }
 }

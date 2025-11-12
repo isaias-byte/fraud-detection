@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController, LoadingController } from '@ionic/angular';
+import { AlertController, IonInfiniteScroll, LoadingController } from '@ionic/angular';
+import { Api } from 'src/app/services/api';
 
 @Component({
   selector: 'app-transaction-history',
@@ -10,62 +11,97 @@ import { AlertController, LoadingController } from '@ionic/angular';
 })
 export class TransactionHistoryPage implements OnInit {
 
-  transactions: any[] = [];
+  historial: any[] = [];
+  
+  currentPage: number = 1;
+  isLoading: boolean = false;
+
+  totalPages: number = 0;
+  totalItems: number = 0;
+  itemsPerPage: number = 25;
+
+  private searchTerm: string = '';
 
   constructor(
     private router: Router,
     private alertCtrl: AlertController,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private api: Api
   ) { }
 
-  ngOnInit() {
-    // Simulamos la carga de datos
-    this.loadHistory();
+  ngOnInit() {    
+    this.goToPage(1);
   }
 
-  loadHistory() {
-    // En el futuro, aquí llamaremos a nuestro servicio
-    // Por ahora, usamos los 3 datos harcodeados
-    this.transactions = [
-      {
-        id: 'tx_1a2b3c4d5e',
-        fecha: '2025-10-23T14:30:00Z',
-        monto: 1500.00,
-        tarjeta: '...1234'
-      },
-      {
-        id: 'tx_6f7g8h9i0j',
-        fecha: '2025-10-22T09:15:00Z',
-        monto: 80.50,
-        tarjeta: '...5678'
-      },
-      {
-        id: 'tx_k1l2m3n4o5',
-        fecha: '2025-10-21T18:45:00Z',
-        monto: 3200.75,
-        tarjeta: '...9012'
-      }
-    ];
+  onSearch(event: any) {
+    this.searchTerm = event.target.value || '';    
+    this.goToPage(1, true); 
   }
+  
+  async goToPage(page: number, isNewSearch: boolean = false) {   
+    if (this.isLoading || page < 1 || (page > this.totalPages && this.totalPages > 0)) {
+      return;
+    }
+
+    this.isLoading = true;
+    this.currentPage = page;
+
+    const loading = await this.loadingCtrl.create({
+      message: `Cargando página ${page}...`,
+    });
+    await loading.present();
+
+    this.api.allFraudulentTransactions(this.currentPage, this.searchTerm).subscribe(
+      (response) => {        
+        this.historial = response.results || [];
+              
+        this.totalItems = response.count || 0;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+        
+        loading.dismiss();
+        this.isLoading = false;
+      },
+      async (error) => {
+        loading.dismiss();
+        this.isLoading = false;        
+              
+        if (isNewSearch) {
+          this.historial = [];
+          this.totalItems = 0;
+          this.totalPages = 0;
+        }
+        
+        this.showAlert('Error', 'No se pudo cargar el historial de fraudes.');
+      }
+    );
+  }
+
+  goToFirst() {
+    this.goToPage(1);
+  }
+
+  goToPrevious() {
+    this.goToPage(this.currentPage - 1);
+  }
+
+  goToNext() {
+    this.goToPage(this.currentPage + 1);
+  }
+
+  goToLast() {
+    this.goToPage(this.totalPages);
+  }  
 
   // 1. Acción de NAVEGAR
   transactionDetails(id: string) {
     console.log('Navegando al detalle de la transacción:', id);
-    
-    // Aquí navegaremos  a la página de detalle    
-    // this.router.navigate(['/transaction-detail', id]);
-
-    // Por ahora, solo mostramos un alert
+        
     this.showAlert('Ver Detalle', `Navegando a la página de detalle para ${id}`);
   }
 
-  // 2. Acción de ELIMINAR
-  async deleteTransaction(id: string, slidingItem: any) { // 'any' para ion-item-sliding
-    
-    // Cerramos el ítem deslizable primero
+  async deleteTransaction(id: string, slidingItem: any) {      
     slidingItem.close();
-
-    // Mostramos una confirmación
+   
     const alert = await this.alertCtrl.create({
       header: 'Confirmar Eliminación',
       message: '¿Estás seguro de que deseas eliminar esta transacción?',
@@ -76,8 +112,7 @@ export class TransactionHistoryPage implements OnInit {
         },
         {
           text: 'Eliminar',
-          handler: () => {
-            // Si el usuario confirma, procedemos a borrar
+          handler: () => {            
             this.executeDelete(id);
           }
         }
@@ -98,7 +133,7 @@ export class TransactionHistoryPage implements OnInit {
     // this.apiService.deleteTransaction(id).subscribe(() => { ... });
     setTimeout(() => {
       // Filtramos el arreglo para quitar el ítem eliminado (simulación)
-      this.transactions = this.transactions.filter(tx => tx.id !== id);
+      this.historial = this.historial.filter(tx => tx.id !== id);
       loading.dismiss();
       this.showAlert('Éxito', 'Transacción eliminada correctamente.');
     }, 1000); // Simulamos 1 segundo de espera
