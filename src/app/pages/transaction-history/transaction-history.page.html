@@ -28,7 +28,7 @@
     
     <ion-item-sliding *ngFor="let item of historial" #slidingItem>
       
-      <ion-item (click)="transactionDetails(item.transaction_id)" [detail]="true" lines="inset">
+      <ion-item (click)="transactionDetails(item)" [detail]="true" lines="inset">
         <ion-icon name="alert-circle-outline" slot="start" color="danger"></ion-icon>
         <ion-label>
           <h2>{{ item.name }}</h2>

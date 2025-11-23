@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
 import { AlertController, IonInfiniteScroll, LoadingController } from '@ionic/angular';
 import { Api } from 'src/app/services/api';
 
@@ -92,11 +92,14 @@ export class TransactionHistoryPage implements OnInit {
     this.goToPage(this.totalPages);
   }  
 
-  // 1. Acción de NAVEGAR
-  transactionDetails(id: string) {
-    console.log('Navegando al detalle de la transacción:', id);
-        
-    this.showAlert('Ver Detalle', `Navegando a la página de detalle para ${id}`);
+  transactionDetails(transaction: any) {
+    const navigationExtras: NavigationExtras = {
+      state: {
+        transaction: transaction
+      }
+    };
+
+    this.router.navigate(['/transaction-details', transaction.transaction_id], navigationExtras);
   }
 
   async deleteTransaction(id: string, slidingItem: any) {      
@@ -128,11 +131,8 @@ export class TransactionHistoryPage implements OnInit {
     });
     await loading.present();
 
-    // --- Simulación de llamada a API ---
-    // En un caso real:
-    // this.apiService.deleteTransaction(id).subscribe(() => { ... });
     setTimeout(() => {
-      // Filtramos el arreglo para quitar el ítem eliminado (simulación)
+      // We filter out the deleted transaction from the local array
       this.historial = this.historial.filter(tx => tx.id !== id);
       loading.dismiss();
       this.showAlert('Éxito', 'Transacción eliminada correctamente.');
@@ -141,7 +141,7 @@ export class TransactionHistoryPage implements OnInit {
   }
 
 
-  // Helper para mostrar alertas rápido
+  // Helper to show alerts
   async showAlert(header: string, message: string) {
     const alert = await this.alertCtrl.create({
       header,

@@ -15,6 +15,10 @@ const routes: Routes = [
     path: 'transaction-history',
     loadChildren: () => import('./pages/transaction-history/transaction-history.module').then( m => m.TransactionHistoryPageModule)
   },
+  {
+    path: 'transaction-details/:id',
+    loadChildren: () => import('./pages/transaction-details/transaction-details.module').then( m => m.TransactionDetailsPageModule)
+  },
 ];
 
 @NgModule({

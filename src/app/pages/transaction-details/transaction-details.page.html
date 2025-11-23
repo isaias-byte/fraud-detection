@@ -1,0 +1,72 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/transaction-history" text="Atrás"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Detalle de Transacción</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <div *ngIf="transaction">
+    
+    <ion-card>
+      <ion-card-header>
+        <div class="header-status">
+          <ion-icon name="warning" color="danger" size="large"></ion-icon>
+          <ion-card-subtitle color="danger">POSIBLE FRAUDE DETECTADO</ion-card-subtitle>
+        </div>
+        <ion-card-title>{{ transaction.name }}</ion-card-title>
+        <ion-card-subtitle>ID Usuario: {{ transaction.id }}</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-list lines="none">
+          
+          <ion-item>
+            <ion-icon name="finger-print-outline" slot="start"></ion-icon>
+            <ion-label>
+              <h3>ID Transacción</h3>
+              <p>{{ transaction.transaction_id }}</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="card-outline" slot="start"></ion-icon>
+            <ion-label>
+              <h3>Tarjeta</h3>
+              <p>BIN: {{ transaction.card_bin }} **** {{ transaction.card_last_four }}</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="calendar-outline" slot="start"></ion-icon>
+            <ion-label>
+              <h3>Vencimiento</h3>
+              <p>{{ transaction.card_expiry_month | number:'2.0' }} / {{ transaction.card_expiry_year }}</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="hardware-chip-outline" slot="start"></ion-icon>
+            <ion-label>
+              <h3>Uso de Chip</h3>
+              <p>{{ transaction.used_chip ? 'Sí, usó chip' : 'No, banda magnética / online' }}</p>
+            </ion-label>
+            <ion-badge slot="end" [color]="transaction.used_chip ? 'success' : 'warning'">
+              {{ transaction.used_chip ? 'SEGURO' : 'RIESGO' }}
+            </ion-badge>
+          </ion-item>
+
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+  </div>
+
+  <div *ngIf="!transaction" class="empty-state">
+    <p>No se encontró información de la transacción.</p>
+  </div>
+
+</ion-content>
