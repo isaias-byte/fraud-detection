@@ -23,4 +23,8 @@ export class Api {
   allFraudulentTransactions(page: number = 1, search: string = ''): Observable<any> {
     return this.http.get(`${this.apiURL}/all-fraudulent-transactions/?page=${page}&search=${search}`);
   }
+
+  deleteTransaction(id: number | string): Observable<any> {
+    return this.http.delete(`${this.apiURL}/delete-transaction/${id}/`);
+  }
 }

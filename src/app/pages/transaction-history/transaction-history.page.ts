@@ -125,19 +125,24 @@ export class TransactionHistoryPage implements OnInit {
     await alert.present();
   }
 
-  async executeDelete(id: string) {
+  async executeDelete(id: any) {
     const loading = await this.loadingCtrl.create({
       message: 'Eliminando...',
     });
     await loading.present();
 
-    setTimeout(() => {
-      // We filter out the deleted transaction from the local array
-      this.historial = this.historial.filter(tx => tx.id !== id);
-      loading.dismiss();
-      this.showAlert('Éxito', 'Transacción eliminada correctamente.');
-    }, 1000); // Simulamos 1 segundo de espera
-    // --- Fin Simulación ---
+    this.api.deleteTransaction(id).subscribe(
+      async () => {
+        // Remove the deleted transaction from local list (transaction_id comes from backend)
+        this.historial = this.historial.filter(tx => tx.transaction_id !== Number(id));
+        await loading.dismiss();
+        this.showAlert('Éxito', 'Transacción eliminada correctamente.');
+      },
+      async (error) => {
+        await loading.dismiss();
+        this.showAlert('Error', 'No se pudo eliminar la transacción.');
+      }
+    );
   }
 
 
